@@ -1,0 +1,29 @@
+name: Daily News Briefing
+
+on:
+  schedule:
+    # 7:00 AM US Central Daylight Time (CDT = UTC-5) → 12:00 UTC
+    # Adjust to "0 13 * * *" after US clocks fall back to CST (first Sun of Nov)
+    - cron: "0 12 * * *"
+  workflow_dispatch:  # allows manual trigger from GitHub Actions tab
+
+jobs:
+  send-briefing:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run briefing
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+        run: node src/index.js

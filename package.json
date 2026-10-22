@@ -1,0 +1,17 @@
+{
+  "name": "daily-news-briefing",
+  "version": "1.0.0",
+  "description": "Automated daily news digest from WaPo, NYT, WSJ, Guardian & Dawn — delivered via email at 7AM CT",
+  "type": "module",
+  "scripts": {
+    "start": "node src/index.js",
+    "test": "node src/index.js"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^1.0.0",
+    "resend": "^4.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
