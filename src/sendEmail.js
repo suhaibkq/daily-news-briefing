@@ -2,7 +2,7 @@ import { Resend } from 'resend';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
-const RECIPIENT = 'suhaibq@gmail.com';
+const RECIPIENTS = ['suhaibq@gmail.com', 'qanitah7@gmail.com', 'shahneelak@gmail.com'];
 const SENDER = 'Daily Briefing <briefing@resend.dev>';
 
 function buildHtml(briefing) {
@@ -12,7 +12,7 @@ function buildHtml(briefing) {
       <tr>
         <td style="padding:12px 0;border-bottom:1px solid #f0f0f0;">
           <span style="font-size:11px;font-weight:600;color:#888;text-transform:uppercase;letter-spacing:.5px;">${item.source}</span>
-          <p style="margin:4px 0 2px;font-size:15px;font-weight:600;color:#1a1a1a;line-height:1.4;">${item.headline}</p>
+          <p style="margin:4px 0 2px;font-size:15px;font-weight:600;line-height:1.4;"><a href="${item.url}" style="color:#1a1a1a;text-decoration:none;" target="_blank">${item.headline}</a></p>
           <p style="margin:0;font-size:13px;color:#555;line-height:1.5;">${item.summary}</p>
         </td>
       </tr>`
@@ -25,7 +25,7 @@ function buildHtml(briefing) {
       <tr>
         <td style="padding:12px 0;border-bottom:1px solid #f0f0f0;">
           <span style="font-size:11px;font-weight:600;color:#888;text-transform:uppercase;letter-spacing:.5px;">${item.source}</span>
-          <p style="margin:4px 0 2px;font-size:15px;font-weight:600;color:#1a1a1a;line-height:1.4;">${item.headline}</p>
+          <p style="margin:4px 0 2px;font-size:15px;font-weight:600;line-height:1.4;"><a href="${item.url}" style="color:#1a1a1a;text-decoration:none;" target="_blank">${item.headline}</a></p>
           <p style="margin:0;font-size:13px;color:#555;line-height:1.5;">${item.summary}</p>
         </td>
       </tr>`
@@ -76,7 +76,7 @@ export async function sendBriefingEmail(briefing) {
 
   const { data, error } = await resend.emails.send({
     from: SENDER,
-    to: RECIPIENT,
+    to: RECIPIENTS,
     subject,
     html: buildHtml(briefing),
   });

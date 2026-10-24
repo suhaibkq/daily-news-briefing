@@ -27,15 +27,17 @@ Return ONLY this JSON structure, with no text outside it:
 {
   "date": "${today}",
   "international": [
-    { "source": "Washington Post", "headline": "...", "summary": "..." },
-    { "source": "New York Times",  "headline": "...", "summary": "..." },
-    { "source": "Wall Street Journal", "headline": "...", "summary": "..." },
-    { "source": "The Guardian",    "headline": "...", "summary": "..." }
+    { "source": "Washington Post", "headline": "...", "url": "https://...", "summary": "..." },
+    { "source": "New York Times",  "headline": "...", "url": "https://...", "summary": "..." },
+    { "source": "Wall Street Journal", "headline": "...", "url": "https://...", "summary": "..." },
+    { "source": "The Guardian",    "headline": "...", "url": "https://...", "summary": "..." }
   ],
   "pakistan": [
-    { "source": "Dawn", "headline": "...", "summary": "..." }
+    { "source": "Dawn", "headline": "...", "url": "https://...", "summary": "..." }
   ]
-}`;
+}
+
+For each item, "url" must be the direct link to that specific article. If you cannot find the exact article URL, use the source's homepage as a fallback.`;
 
   const stream = client.messages.stream({
     model: 'claude-opus-5-5',
