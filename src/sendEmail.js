@@ -1,9 +1,14 @@
-import { Resend } from 'resend';
+import nodemailer from 'nodemailer';
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+const RECIPIENTS = ['suhaibq@gmail.com', 'qanitah7@gmail.com', 'shahneelak@gmail.com'];
 
-const RECIPIENTS = ['suhaibq@gmail.com'];
-const SENDER = 'Daily Briefing <briefing@resend.dev>';
+const transporter = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+    user: 'suhaibq@gmail.com',
+    pass: process.env.GMAIL_APP_PASSWORD,
+  },
+});
 
 function buildHtml(briefing) {
   const intlRows = briefing.international
@@ -42,7 +47,7 @@ function buildHtml(briefing) {
 
         <!-- Header -->
         <tr><td style="background:#1a1a1a;padding:24px 32px;">
-          <p style="margin:0;font-size:11px;color:#888;letter-spacing:1px;text-transform:uppercase;">Good morning, Suhaib</p>
+          <p style="margin:0;font-size:11px;color:#888;letter-spacing:1px;text-transform:uppercase;">Good morning</p>
           <h1 style="margin:4px 0 0;font-size:22px;color:#fff;font-weight:700;">Daily News Briefing</h1>
           <p style="margin:6px 0 0;font-size:13px;color:#aaa;">${briefing.date}</p>
         </td></tr>
@@ -73,15 +78,14 @@ function buildHtml(briefing) {
 
 export async function sendBriefingEmail(briefing) {
   const subject = `Morning Briefing — ${briefing.date}`;
+  const html = buildHtml(briefing);
 
-  const { data, error } = await resend.emails.send({
-    from: SENDER,
-    to: RECIPIENTS,
+  await transporter.sendMail({
+    from: `"Daily News Briefing" <suhaibq@gmail.com>`,
+    to: RECIPIENTS.join(', '),
     subject,
-    html: buildHtml(briefing),
+    html,
   });
 
-  if (error) throw new Error(`Resend error: ${JSON.stringify(error)}`);
-  console.log(`Email sent — id: ${data.id}`);
-  return data;
+  console.log(`Email sent to ${RECIPIENTS.length} recipients.`);
 }
