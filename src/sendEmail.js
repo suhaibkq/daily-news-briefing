@@ -2,7 +2,7 @@ import { Resend } from 'resend';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
-const RECIPIENTS = ['suhaibq@gmail.com', 'qanitah7@gmail.com', 'shahneelak@gmail.com'];
+const RECIPIENTS = ['suhaibq@gmail.com'];
 const SENDER = 'Daily Briefing <briefing@resend.dev>';
 
 function buildHtml(briefing) {
