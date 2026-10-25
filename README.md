@@ -10,18 +10,18 @@ Automated daily email digest of top headlines from five curated news sources, de
 
 ## How it works
 1. **GitHub Actions** triggers the workflow every day at 12:00 UTC (7AM CDT).
-2. **Claude API** (`claude-opus-5-5`) searches each outlet for today's top headlines.
-3. **Resend** emails a formatted HTML digest to suhaibq@gmail.com.
+2. **Claude API** (`claude-haiku-5-5`) with web search fetches today's top headlines from each outlet.
+3. **nodemailer + Gmail SMTP** emails a formatted HTML digest to configured recipients.
 
 ## Stack
 | Layer | Tool | Cost |
 |---|---|---|
-| LLM + web search | Anthropic API | ~$0.05–0.10/day |
-| Email delivery | Resend (free tier) | $0 |
+| LLM + web search | Anthropic Claude Haiku API | ~$0.05/day |
+| Email delivery | Gmail SMTP (nodemailer) | $0 |
 | Scheduler | GitHub Actions | $0 (public repo) |
 | Infrastructure | None | — |
 
-**Estimated monthly cost: < $3**
+**Estimated monthly cost: < $2**
 
 ---
 
@@ -39,8 +39,9 @@ npm install
 **Anthropic API key**  
 → [console.anthropic.com](https://console.anthropic.com) → API Keys → Create key
 
-**Resend API key**  
-→ [resend.com](https://resend.com) → Sign up (free) → API Keys → Create key
+**Gmail App Password**  
+→ [myaccount.google.com](https://myaccount.google.com) → Security → 2-Step Verification → App passwords → Create  
+(requires 2FA to be enabled on your Google account)
 
 ### 3. Add secrets to GitHub
 Go to your repo → **Settings → Secrets and variables → Actions → New repository secret**
@@ -48,7 +49,7 @@ Go to your repo → **Settings → Secrets and variables → Actions → New rep
 | Secret name | Value |
 |---|---|
 | `ANTHROPIC_API_KEY` | Your Anthropic key (`sk-ant-...`) |
-| `RESEND_API_KEY` | Your Resend key (`re_...`) |
+| `GMAIL_APP_PASSWORD` | Your Gmail App Password (16-char code) |
 
 ### 4. Test locally
 ```bash
@@ -83,7 +84,7 @@ daily-news-briefing/
 ├── src/
 │   ├── index.js           # entry point
 │   ├── fetchHeadlines.js  # Claude API + web search
-│   └── sendEmail.js       # Resend email delivery
+│   └── sendEmail.js       # Gmail SMTP email delivery
 ├── .github/workflows/
 │   └── daily-briefing.yml # GitHub Actions cron
 ├── docs/

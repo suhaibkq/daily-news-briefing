@@ -7,11 +7,17 @@ on:
     - cron: "0 12 * * *"
   workflow_dispatch:  # allows manual trigger from GitHub Actions tab
 
+permissions:
+  contents: write
+  pull-requests: write
+
 jobs:
   send-briefing:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
@@ -28,10 +34,38 @@ jobs:
           GMAIL_APP_PASSWORD: ${{ secrets.GMAIL_APP_PASSWORD }}
         run: node src/index.js
 
-      - name: Commit daily archive
+      - name: Commit archive to weekly branch
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           git config user.name "suhaibkq"
           git config user.email "Suhaibq@gmail.com"
+
+          # Derive week branch name, e.g. briefing/2026-W43
+          WEEK=$(date -u +'%Y-W%V')
+          BRANCH="briefing/${WEEK}"
+          TODAY=$(date -u +'%Y-%m-%d')
+          DAY_OF_WEEK=$(date -u +%u)   # 1=Mon … 7=Sun
+
+          # Create or switch to the week branch
+          if git ls-remote --heads origin "${BRANCH}" | grep -q "${BRANCH}"; then
+            git checkout "${BRANCH}"
+          else
+            git checkout -b "${BRANCH}"
+          fi
+
           git add archive/
-          git diff --staged --quiet || git commit -m "briefing: $(date -u +'%Y-%m-%d')"
-          git push
+          git diff --staged --quiet || git commit -m "briefing: ${TODAY}"
+          git push -u origin "${BRANCH}"
+
+          # On Sundays: open a PR to merge the week's archives into main
+          if [ "${DAY_OF_WEEK}" = "7" ]; then
+            PR_EXISTS=$(gh pr list --head "${BRANCH}" --base main --state open --json number --jq length)
+            if [ "${PR_EXISTS}" = "0" ]; then
+              gh pr create \
+                --title "Weekly briefing archive: ${WEEK}" \
+                --body "Automated merge of daily briefing archives for ${WEEK}." \
+                --base main \
+                --head "${BRANCH}"
+            fi
+          fi
