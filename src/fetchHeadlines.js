@@ -40,10 +40,10 @@ Return ONLY this JSON structure, with no text outside it:
 For each item, "url" must be the direct link to that specific article. If you cannot find the exact article URL, use the source's homepage as a fallback.`;
 
   const stream = client.messages.stream({
-    model: 'claude-opus-5-5',
+    model: 'claude-haiku-5-5',
     max_tokens: 4096,
     system: systemPrompt,
-    tools: [{ type: 'web_search_20260209', name: 'web_search' }],
+    tools: [{ type: 'web_search_20260209', name: 'web_search', max_uses: 10 }],
     messages: [{ role: 'user', content: userPrompt }],
   });
 
